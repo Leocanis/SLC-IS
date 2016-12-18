@@ -26,3 +26,25 @@
 {
 	top-padding: 20px;
 }
+
+.not-active {
+   pointer-events: none;
+   cursor: default;
+}
+
+.center_align {
+	text-align: center;
+}
+
+select {
+        width:140px;
+    }
+
+textarea {
+	width: 50%;
+	resize: none;
+}
+
+.inv_input{
+	width:50%;
+}

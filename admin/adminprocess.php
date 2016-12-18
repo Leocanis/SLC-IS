@@ -16,21 +16,50 @@ class AdminProcess {
         if (isset($_POST['subupdlevel'])) {
             $this->procUpdateLevel();
         }
-        /* Admin submitted delete user form */ else if (isset($_GET['d'])) {
+        /* Admin submitted delete user form */ 
+        else if (isset($_GET['d'])) {
             $this->procDeleteUser();
         }
-        /* Admin submitted delete inactive users form */ else if (isset($_POST['subdelinact'])) {
+        /* Admin submitted delete inactive users form */ 
+        else if (isset($_POST['subdelinact'])) {
             $this->procDeleteInactive();
         }
-        /* Admin submitted ban user form */ else if (isset($_GET['b'])) {
+        /* Admin submitted ban user form */ 
+        else if (isset($_GET['b'])) {
             $this->procBanUser();
         }
-        /* Admin submitted delete banned user form */ else if (isset($_GET['db'])) {
+        /* Admin submitted unban user form */
+        else if (isset($_GET['ub'])) {
+        	$this->procUnBanUser();
+        }        
+        /* Admin submitted delete banned user form */ 
+        else if (isset($_GET['db'])) {
             $this->procDeleteBannedUser();
         }
-        /* Should not get here, redirect to home page */ else {
+        /* Should not get here, redirect to home page */ 
+        else {
             header("Location: ../index.php");
         }
+    }
+    
+    function procUnBanUser() {
+    	global $session, $database, $form;
+    	/* Username error checking */
+    	$subuser = $this->checkUsername("unbanuser");
+    	/* Errors exist, have user correct them */
+    	if ($form->num_errors > 0) {
+    		$_SESSION['value_array'] = $_POST;
+    		$_SESSION['error_array'] = $form->getErrorArray();
+    		header("Location: " . $session->referrer);
+    	}
+    	/* Ban user from member system */ else {
+    	$q = "UPDATE " . TBL_USERS . " SET busena = 'A' WHERE username = '$subuser'";
+    	$database->query($q);
+    	$naudotojo_id = $database->selectUserID($subuser);
+    	$database->setStatusHistory($naudotojo_id['id'], 'A');
+    
+    	header("Location: " . $session->referrer);
+    	}
     }
 
     /**
@@ -70,7 +99,7 @@ class AdminProcess {
             header("Location: " . $session->referrer);
         }
         /* Delete user from database */ else {
-            $q = "DELETE FROM " . TBL_USERS . " WHERE username = '$subuser'";
+            $q = "UPDATE " . TBL_USERS . " set busena = 'D' WHERE username = '$subuser'";
             $database->query($q);
             header("Location: " . $session->referrer);
         }
@@ -101,7 +130,6 @@ class AdminProcess {
         global $session, $database, $form;
         /* Username error checking */
         $subuser = $this->checkUsername("banuser");
-
         /* Errors exist, have user correct them */
         if ($form->num_errors > 0) {
             $_SESSION['value_array'] = $_POST;
@@ -109,11 +137,11 @@ class AdminProcess {
             header("Location: " . $session->referrer);
         }
         /* Ban user from member system */ else {
-            $q = "DELETE FROM " . TBL_USERS . " WHERE username = '$subuser'";
+            $q = "UPDATE " . TBL_USERS . " SET busena = 'B' WHERE username = '$subuser'";
             $database->query($q);
-
-            $q = "INSERT INTO " . TBL_BANNED_USERS . " VALUES ('$subuser', $session->time)";
-            $database->query($q);
+            $naudotojo_id = $database->selectUserID($subuser);
+            $database->setStatusHistory($naudotojo_id['id'], 'B');
+            
             header("Location: " . $session->referrer);
         }
     }

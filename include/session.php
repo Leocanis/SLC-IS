@@ -11,7 +11,8 @@ class Session {
     var $userlevel;    //The level to which the user pertains
     var $time;         //Time user was last active (page loaded)
     var $logged_in;    //True if user is logged in, false otherwise
-    var $userinfo = array();  //The array holding all user info
+    var $userinfo = array(); //The array holding all user info
+    var $invinfo = array(); //The array holding all inventory info
     var $url;          //The page url current being viewed
     var $referrer;     //Last recorded site page viewed
 
@@ -50,7 +51,8 @@ class Session {
             $this->userlevel = GUEST_LEVEL;
             $database->addActiveGuest($_SERVER['REMOTE_ADDR'], $this->time);
         }
-        /* Update users last active timestamp */ else {
+        /* Update users last active timestamp */ 
+        else {
             $database->addActiveUser($this->username, $this->time);
         }
 
@@ -97,8 +99,7 @@ class Session {
 
             /* User is logged in, set class variables */
             $this->userinfo = $database->getUserInfo($_SESSION['username']);
-            $this->username = $this->userinfo['username'];
-            $this->userid = $this->userinfo['userid'];
+            $this->username = $this->userinfo['username'];            
             $this->userlevel = $this->userinfo['userlevel'];
             return true;
         }
@@ -165,7 +166,9 @@ class Session {
         $this->userlevel = $this->userinfo['userlevel'];
 
         /* Insert userid into database and update active users table */
-        $database->updateUserField($this->username, "userid", $this->userid);
+        $database->updateUserField($this->username, "last_login", $database->selectTimeNow());
+        $naudotojoID = $database->selectUserID($this->username);
+        $database->setLoginHistory($naudotojoID['id'], $_SERVER['REMOTE_ADDR']);
         $database->addActiveUser($this->username, $this->time);
         $database->removeActiveGuest($_SERVER['REMOTE_ADDR']);
 
@@ -180,7 +183,7 @@ class Session {
             setcookie("cookname", $this->username, time() + COOKIE_EXPIRE, COOKIE_PATH);
             setcookie("cookid", $this->userid, time() + COOKIE_EXPIRE, COOKIE_PATH);
         }
-
+		$this->logged_in=true;
         /* Login completed successfully */
         return true;
     }
@@ -229,7 +232,7 @@ class Session {
      * 1. If no errors were found, it registers the new user and
      * returns 0. Returns 2 if registration failed.
      */
-    function register($subuser, $subpass, $subemail) {
+    function register($subuser, $subpass, $subemail, $sublevel) {
         global $database, $form, $mailer;  //The database, form and mailer object
 
         /* Username error checking */
@@ -269,7 +272,7 @@ class Session {
             if (strlen($subpass) < 4) {
                 $form->setError($field, "* Ne mažiau kaip 4 simboliai");
             }
-            /* Check if password is not alphanumeric */ else if (!preg_match("/^([0-9a-z])+$/i", ($subpass = trim($subpass)))) {
+            /* Check if password is not alphanumeric */ else if (!preg_match("/^([0-9a-zA-Z])+$/i", ($subpass = trim($subpass)))) {
                 $form->setError($field, "* Slaptažodis gali būti sudarytas
                     <br>&nbsp;&nbsp;tik iš raidžių ir skaičių");
             }
@@ -300,8 +303,9 @@ class Session {
         if ($form->num_errors > 0) {
             return 1;  //Errors with form
         }
-        /* No errors, add the new account to the */ else {
-            if ($database->addNewUser($subuser, md5($subpass), $subemail)) {
+        /* No errors, add the new account to the */ 
+        else {
+            if ($database->addNewUser($subuser, md5($subpass), $subemail, $sublevel)) {
                 if (EMAIL_WELCOME) {
                     $mailer->sendWelcome($subuser, $subemail, $subpass);
                 }
@@ -311,6 +315,26 @@ class Session {
             }
         }
     }
+    
+    function addNewInventory($itemArray)
+    {
+    	global $database, $form;
+    	
+    	$database->addNewInventory($itemArray);
+    	
+    	return true;
+    	
+    }
+    
+    function editInventory($itemArray)
+    {
+    	global $database, $form;
+    	 
+    	$database->editInventory($itemArray);
+    	 
+    	return true;
+    	 
+    }
 
     /**
      * editAccount - Attempts to edit the user's account information
@@ -319,76 +343,113 @@ class Session {
      * format, the change is made. All other fields are changed
      * automatically.
      */
-    function editAccount($subcurpass, $subnewpass, $subemail) {
-        global $database, $form;  //The database and form object
-        /* New password entered */
-        if ($subnewpass) {
-            /* Current Password error checking */
-            $field = "curpass";  //Use field name for current password
-            if (!$subcurpass) {
-                $form->setError($field, "* Neįvestas slaptažodis");
-            } else {
-                /* Check if password too short or is not alphanumeric */
-                $subcurpass = stripslashes($subcurpass);
-                if (strlen($subcurpass) < 4 ||
-                        !preg_match("/^([0-9a-z])+$/i", ($subcurpass = trim($subcurpass)))) {
-                    $form->setError($field, "* Slaptažodis gali būti sudarytas
+    function editAccount($itemArray) {
+    	global $database, $form;  //The database and form object
+    	/* New password entered */
+    	if ($itemArray['newpass']) {
+    		/* Current Password error checking */
+    		$field = "curpass";  //Use field name for current password
+    		if (!$itemArray['curpass']) {
+    			$form->setError($field, "* Neįvestas slaptažodis");
+    		} else {
+    			/* Check if password too short or is not alphanumeric */
+    			$itemArray['curpass'] = stripslashes($itemArray['curpass']);
+    			if (strlen($itemArray['curpass']) < 4 ||
+    					!preg_match("/^([0-9a-z])+$/i", ($itemArray['curpass'] = trim($itemArray['curpass'])))) {
+    						$form->setError($field, "* Slaptažodis gali būti sudarytas
                     <br>&nbsp;&nbsp;tik iš raidžių ir skaičių");
-                }
-                /* Password entered is incorrect */
-                if ($database->confirmUserPass($this->username, md5($subcurpass)) != 0) {
-                    $form->setError($field, "* Neteisingas slaptažodis");
-                }
-            }
-
-            /* New Password error checking */
-            $field = "newpass";  //Use field name for new password
-            /* Spruce up password and check length */
-            $subpass = stripslashes($subnewpass);
-            if (strlen($subnewpass) < 4) {
-                $form->setError($field, "* Slaptažodis per trumpas");
-            }
-            /* Check if password is not alphanumeric */ else if (!preg_match("/^([0-9a-z])+$/i", ($subnewpass = trim($subnewpass)))) {
-                $form->setError($field, "* Slaptažodis gali būti sudarytas
+    					}
+    					/* Password entered is incorrect */
+    					if ($database->confirmUserPass($this->username, md5($itemArray['curpass'])) != 0) {
+    						$form->setError($field, "* Neteisingas slaptažodis");
+    					}
+    		}
+    
+    		/* New Password error checking */
+    		$field = "newpass";  //Use field name for new password
+    		/* Spruce up password and check length */
+    		$subpass = stripslashes($itemArray['newpass']);
+    		if (strlen($itemArray['newpass']) < 4) {
+    			$form->setError($field, "* Slaptažodis per trumpas");
+    		}
+    		/* Check if password is not alphanumeric */ else if (!preg_match("/^([0-9a-z])+$/i", ($itemArray['newpass'] = trim($itemArray['newpass'])))) {
+    		$form->setError($field, "* Slaptažodis gali būti sudarytas
                     <br>&nbsp;&nbsp;tik iš raidžių ir skaičių");
-            }
-        }
-        /* Change password attempted */ else if ($subcurpass) {
-            /* New Password error reporting */
-            $field = "newpass";  //Use field name for new password
-            $form->setError($field, "* Neįvestas naujas slaptažodis");
-        }
-
-        /* Email error checking */
-        $field = "email";  //Use field name for email
-        if ($subemail && strlen($subemail = trim($subemail)) > 0) {
-            /* Check if valid email address */
-            $regex = "/^[_+a-z0-9-]+(\.[_+a-z0-9-]+)*"
-                    . "@[a-z0-9-]+(\.[a-z0-9-]{1,})*"
-                    . "\.([a-z]{2,}){1}$/i";
-            if (!preg_match($regex, $subemail)) {
-                $form->setError($field, "* Neteisingas e-pašto adresas");
-            }
-            $subemail = stripslashes($subemail);
-        }
-
-        /* Errors exist, have user correct them */
-        if ($form->num_errors > 0) {
-            return false;  //Errors with form
-        }
-
-        /* Update password since there were no errors */
-        if ($subcurpass && $subnewpass) {
-            $database->updateUserField($this->username, "password", md5($subnewpass));
-        }
-
-        /* Change Email */
-        if ($subemail) {
-            $database->updateUserField($this->username, "email", $subemail);
-        }
-
-        /* Success! */
-        return true;
+    		}
+    	}
+    	/* Change password attempted */ else if ($itemArray['curpass']) {
+    	/* New Password error reporting */
+    	$field = "newpass";  //Use field name for new password
+    	$form->setError($field, "* Neįvestas naujas slaptažodis");
+    	}
+    
+    	/* Email error checking */
+    	$field = "email";  //Use field name for email
+    	if ($itemArray['email'] && strlen($itemArray['email'] = trim($itemArray['email'])) > 0) {
+    		/* Check if valid email address */
+    		$regex = "/^[_+a-z0-9-]+(\.[_+a-z0-9-]+)*"
+    				. "@[a-z0-9-]+(\.[a-z0-9-]{1,})*"
+    						. "\.([a-z]{2,}){1}$/i";
+    						if (!preg_match($regex, $itemArray['email'])) {
+    							$form->setError($field, "* Neteisingas e-pašto adresas");
+    						}
+    						$itemArray['email'] = stripslashes($itemArray['email']);
+    	}
+    
+    	/* Errors exist, have user correct them */
+    	if ($form->num_errors > 0) {
+    		return false;  //Errors with form
+    	}
+    
+    	/* Update password since there were no errors */
+    	if ($itemArray['curpass'] && $itemArray['newpass']) {
+    		$database->updateUserField($this->username, "password", md5($itemArray['newpass']));
+    		$naudotojo_id = $database->selectUserID($this->username);
+    		$database->setPasswordHistory($naudotojo_id['id'], md5($itemArray['newpass']));
+    	}
+    
+    	/* Change Email */
+    	if ($itemArray['email']) {
+    		$database->updateUserField($this->username, "email", $itemArray['email']);
+    	}
+    	
+    	if ($itemArray['vardas']) {
+    		$database->updateUserField($this->username, "Vardas", $itemArray['vardas']);
+    	}
+    	
+    	if ($itemArray['pavarde']) {
+    		$database->updateUserField($this->username, "Pavarde", $itemArray['pavarde']);
+    	}
+    	
+    	if ($itemArray['university']) {
+    		$database->updateUserField($this->username, "university", $itemArray['university']);
+    	}
+    	
+    	if ($itemArray['course']) {
+    		$database->updateUserField($this->username, "course", $itemArray['course']);
+    	}
+    	
+    	if ($itemArray['faculty']) {
+    		$database->updateUserField($this->username, "faculty", $itemArray['faculty']);
+    	}
+    	
+    	if ($itemArray['phone']) {
+    		$database->updateUserField($this->username, "phone", $itemArray['phone']);
+    	}
+    	
+    	if ($itemArray['address']) {
+    		$database->updateUserField($this->username, "address", $itemArray['address']);
+    	}
+    	
+    	if ($itemArray['city']) {
+    		$database->updateUserField($this->username, "city", $itemArray['city']);
+    	}
+    	
+    	
+    	
+    
+    	/* Success! */
+    	return true;
     }
 
     /**

@@ -26,11 +26,12 @@ include("include/session.php");
 		<tr><td>  
             <?php
             //Jei vartotojas prisijungęs
+            
             if ($session->logged_in) {
                 include("include/meniu.php");
                 ?>
 								<div style="text-align: center; color: green">
-									<h1>Pradinis sistemos puslapis (index.php).</h1>
+									<h1>Sveiki!</h1>
 								</div>
 						<?php
                 //Jei vartotojas neprisijungęs, rodoma prisijungimo forma

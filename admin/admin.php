@@ -1,6 +1,7 @@
 <?php
 include("../include/session.php");
 
+
 //Iš pradžių aprašomos funkcijos, po to jos naudojamos.
 
 /**
@@ -9,7 +10,7 @@ include("../include/session.php");
  */
 function displayUsers() {
     global $database;
-    $q = "SELECT username,userlevel,email,timestamp "
+    $q = "SELECT * "
             . "FROM " . TBL_USERS . " ORDER BY userlevel DESC,username";
     $result = $database->query($q);
     /* Error occurred, return given name by default */
@@ -21,7 +22,7 @@ function displayUsers() {
     if ($num_rows == 0) {
         echo "Lentelė tuščia.";
         return;
-    }
+    }    
     /* Display table contents */
     echo "<table class=\"table table-hover\">";
     echo "<thead><tr><th>Vartotojo vardas</th>
@@ -33,6 +34,7 @@ function displayUsers() {
         $uid =
         $uname = mysqli_result($result, $i, "username");
         $ulevel = mysqli_result($result, $i, "userlevel");
+        $last_login = mysqli_result($result, $i, "last_login");
         $ulevelname = '';
         switch ($ulevel)
         {
@@ -50,7 +52,7 @@ function displayUsers() {
         }
         
         $email = mysqli_result($result, $i, "email");
-        $time = date("Y-m-d G:i", mysqli_result($result, $i, "timestamp"));
+        //$time = date("Y-m-d G:i", mysqli_result($result, $i, "timestamp"));
         $ulevelchange = '<form action="adminprocess.php" method="POST">
                         
                                 <input type="hidden" name="upduser" value="'.$uname.'">
@@ -67,8 +69,12 @@ function displayUsers() {
         <td>$uname</td>
         <td>$ulevelchange</td>
         <td>$email</td>
-        <td>$time</td>
-        <td><a href='AdminProcess.php?b=1&banuser=$uname' onclick='return confirm(\"Ar tikrai norite blokuoti?\");'>Blokuoti</a> | <a href='AdminProcess.php?d=1&deluser=$uname' onclick='return confirm(\"Ar tikrai norite trinti?\");'>Trinti</a></td>
+        <td>$last_login</td>
+        <td><a href='AdminProcess.php?b=1&banuser=$uname' onclick='return confirm(\"Ar tikrai norite blokuoti?\");'"; 
+        if(mysqli_result($result, $i, "busena") == 'B' || mysqli_result($result, $i, "busena") == 'D') { echo "class=\"not-active\""; } 
+        echo  ">Blokuoti</a> | <a href='AdminProcess.php?d=1&deluser=$uname' onclick='return confirm(\"Ar tikrai norite trinti?\");'";
+        if(mysqli_result($result, $i, "busena") == 'D') { echo "class=\"not-active\""; }
+        echo ">Trinti</a></td>
         </tr>\n";
     }
     echo "</tbody></table><br>\n";
@@ -85,8 +91,8 @@ function mysqli_result($res, $row, $field=0) {
  */
 function displayBannedUsers() {
     global $database;
-    $q = "SELECT username,timestamp "
-            . "FROM " . TBL_BANNED_USERS . " ORDER BY username";
+    $q = "SELECT username,last_login "
+            . "FROM " . TBL_USERS . " where busena = 'B' ORDER BY username";
     $result = $database->query($q);
     /* Error occurred, return given name by default */
     $num_rows = mysqli_num_rows($result);
@@ -99,23 +105,53 @@ function displayBannedUsers() {
         return;
     }
     /* Display table contents */
-    echo "<table align=\"left\" border=\"1\" cellspacing=\"0\" cellpadding=\"3\">\n";
+    echo "<table class=\"table table-hover\">\n";
     echo "<tr><td><b>Vartotojo vardas</b></td><td><b>Blokavimo laikas</b></td><td><b>Veiksmai</b></td></tr>\n";
     for ($i = 0; $i < $num_rows; $i++) {
         $uname = mysqli_result($result, $i, "username");
-        $time = date("Y-m-d G:i", mysqli_result($result, $i, "timestamp"));
-        echo "<tr><td>$uname</td><td>$time</td><td><a href='AdminProcess.php?db=1&delbanuser=$uname' onclick='return confirm(\"Ar tikrai norite Šalinti?\");'>Šalinti</a></td></tr>\n";
+        $time = mysqli_result($result, $i, "last_login");
+        echo "<tr><td>$uname</td>
+        <td>$time</td>
+        <td><a href='AdminProcess.php?ub=1&unbanuser=$uname' onclick='return confirm(\"Ar tikrai norite atblokuoti?\");'>Atblokuoti</a> | <a href='AdminProcess.php?db=1&delbanuser=$uname' onclick='return confirm(\"Ar tikrai norite Šalinti?\");'>Šalinti</a></td></tr>\n";
     }
     echo "</table><br>\n";
 }
 
+function displayDeletedUsers() {
+	global $database;
+	$q = "SELECT username,last_login "
+			. "FROM " . TBL_USERS . " where busena = 'D' ORDER BY username";
+			$result = $database->query($q);
+			/* Error occurred, return given name by default */
+			$num_rows = mysqli_num_rows($result);
+			if (!$result || ($num_rows < 0)) {
+				echo "Error displaying info";
+				return;
+			}
+			if ($num_rows == 0) {
+				echo "Lentelė tuščia.";
+				return;
+			}
+			/* Display table contents */
+			echo "<table class=\"table table-hover\">\n";
+			echo "<tr><td><b>Vartotojo vardas</b></td><td><b>Blokavimo laikas</b></td><td><b>Veiksmai</b></td></tr>\n";
+			for ($i = 0; $i < $num_rows; $i++) {
+				$uname = mysqli_result($result, $i, "username");
+				$time = mysqli_result($result, $i, "last_login");
+				echo "<tr><td>$uname</td>
+				<td>$time</td>
+				<td><a href='AdminProcess.php?ub=1&unbanuser=$uname' onclick='return confirm(\"Ar tikrai norite atstatyti?\");'>Atstatyti</a></td></tr>\n";
+			}
+			echo "</table><br>\n";
+}
+
 function ViewActiveUsers() {
     global $database;
-    if (!defined('TBL_ACTIVE_USERS')) {
+    if (!defined('TBL_USERS')) {
         die("");
     }
-    $q = "SELECT username FROM " . TBL_ACTIVE_USERS
-            . " ORDER BY timestamp DESC,username";
+    $q = "SELECT username FROM " . TBL_USERS
+            . " ORDER BY last_login DESC,username";
     $result = $database->query($q);
     /* Error occurred, return given name by default */
     $num_rows = mysqli_num_rows($result);
@@ -166,8 +202,8 @@ if (!$session->isAdmin()) {
                         include("../include/meniu.php");
                         //Nuoroda į pradžią
                         ?>
-                        <table style="border-width: 2px; border-style: dotted;"><tr><td>
-                                    Atgal į [<a href="../index.php">Pradžia</a>]
+                        <table><tr><td>
+                                    Atgal į <a href="../index.php">Pradžia</a>
                                 </td></tr></table>               
                         <br> 
                         <?php
@@ -206,12 +242,16 @@ if (!$session->isAdmin()) {
 
             </td></tr>
                             <tr><td><hr></td></tr>
-                <tr><td> 
-                        <h3>Šiuo metu prisijungę vartotojai:</h3>
-                        <?php
-                        ViewActiveUsers();
-                        ?>
-                <tr><td><hr></td></tr>             
+                            
+           <tr><td><hr></td></tr>           
+        <tr><td><h3>Panaikinti naudotojai:</h3>                 
+                <?php 
+                displayDeletedUsers();
+                ?>             
+                             
+                             </td></tr> 
+                             <tr><td><hr></td></tr>
+                             
     </table>
     </td></tr>
     <?php

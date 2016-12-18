@@ -4,23 +4,26 @@ include("include/session.php");
 
 class Process {
     /* Class constructor */
-
+	
     function Process() {
         global $session;
         /* User submitted login form */
         if (isset($_POST['sublogin'])) {
             $this->procLogin();
         }
-        /* User submitted registration form */ else if (isset($_POST['subjoin'])) {
+        /* User submitted registration form */ 
+        else if (isset($_POST['subjoin'])) {
             $this->procRegister();
         }
         
-        /* User submitted forgot password form */ else if (isset($_POST['subforgot'])) {
+        /* User submitted forgot password form */ 
+        else if (isset($_POST['subforgot'])) {
             $this->procForgotPass();
         }
-        /* User submitted edit account form */ else if (isset($_POST['subedit'])) {
+        /* User submitted edit account form */ 
+        else if (isset($_POST['subedit'])) {
             $this->procEditAccount();
-        }
+        }        
         /**
          * The only other reason user should be directed here
          * is if he wants to logout, which means user is
@@ -44,15 +47,15 @@ class Process {
     function procLogin() {
         global $session, $form;
         /* Login attempt */
+        
         $retval = $session->login($_POST['user'], $_POST['pass'], isset($_POST['remember']));
-
+        
         /* Login successful */
         if ($retval) {
-            $session->logged_in = 1;
+            $session->logged_in = true;
             header("Location: " . $session->referrer);
         }
         /* Login failed */ else {
-            $session->logged_in = null;
             $_SESSION['value_array'] = $_POST;
             $_SESSION['error_array'] = $form->getErrorArray();
             header("Location: " . $session->referrer);
@@ -83,7 +86,8 @@ class Process {
             $_POST['user'] = strtolower($_POST['user']);
         }
         /* Registration attempt */
-        $retval = $session->register($_POST['user'], $_POST['pass'], $_POST['email']);
+        $_SESSION['lygis'] = $_POST['level'];
+        $retval = $session->register($_POST['user'], $_POST['pass'], $_POST['email'],  $_POST['level']);
 
         /* Registration Successful */
         if ($retval == 0) {
@@ -159,13 +163,28 @@ class Process {
      */
     function procEditAccount() {
         global $session, $form;
+        
+        $itemArray = array();
+        $itemArray['curpass'] = $_POST['curpass'];
+        $itemArray['newpass'] = $_POST['newpass'];
+        $itemArray['email'] = $_POST['email'];
+        $itemArray['vardas'] = $_POST['vardas'];
+        $itemArray['pavarde'] = $_POST['pavarde'];
+        $itemArray['university'] = $_POST['university'];
+        $itemArray['course'] = $_POST['course'];
+        $itemArray['faculty'] = $_POST['faculty'];
+        $itemArray['phone'] = $_POST['phone'];
+        $itemArray['address'] = $_POST['address'];
+        $itemArray['city'] = $_POST['city'];
+        
+        
         /* Account edit attempt */
-        $retval = $session->editAccount($_POST['curpass'], $_POST['newpass'], $_POST['email']);
+        $retval = $session->editAccount($itemArray);
 
         /* Account edit successful */
         if ($retval) {
             $_SESSION['useredit'] = true;
-            header("Location: " . $session->referrer);
+            header("Location: " .  $path . "userinfo.php");
         }
         /* Error found with form */ else {
             $_SESSION['value_array'] = $_POST;
@@ -173,6 +192,8 @@ class Process {
             header("Location: " . $session->referrer);
         }
     }
+    
+    
 
 }
 

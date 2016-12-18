@@ -27,20 +27,20 @@ if ($session->logged_in) {
 
                 include("include/meniu.php");
                 ?>
-                <table style="border-width: 2px; border-style: dotted;">
+                <table>
                     <tr><td>
-                            Atgal į [<a href="index.php">Pradžia</a>]
+                            Atgal į <a href="index.php">Pradžia</a>
                         </td></tr></table>               
                 <br> 
                 <?php
                 /* Requested Username error checking */
-                if (isset($_GET['user'])) {
-                    $req_user = trim($_GET['user']);
+                if (isset($session->username)) {
+                    $req_user = trim($session->username);
                 } else {
                     $req_user = null;
                 }
                 if (!$req_user || strlen($req_user) == 0 ||
-                        !preg_match("/^([0-9a-z])+$/", $req_user) ||
+                        !preg_match("/^([0-9a-zA-Z])+$/", $req_user) ||
                         !$database->usernameTaken($req_user)) {
                     echo "<br><br>";
                     die("Vartotojas nėra užsiregistravęs");
@@ -49,10 +49,31 @@ if ($session->logged_in) {
                 /* Display requested user information */
                 $req_user_info = $database->getUserInfo($req_user);
 
-                echo "<br><table border=1 style=\"text-align:left;\" cellspacing=\"0\" cellpadding=\"3\"><tr><td><b>Vartotojo vardas: </b></td>"
+                echo "<br><table class=\"table table-bordered\">"
+				. "<tr><td><b>Vartotojo vardas: </b></td>"
                 . "<td>" . $req_user_info['username'] . "</td></tr>"
+                . "<tr><td><b>Vardas:</b></td>"
+                . "<td>" . $req_user_info['Vardas'] . "</td></tr>" 
+                . "<tr><td><b>Pavarė</b></td>"
+                . "<td>" . $req_user_info['Pavarde'] . "</td></tr>" 
                 . "<tr><td><b>E-paštas:</b></td>"
-                . "<td>" . $req_user_info['email'] . "</td></tr></table><br>";
+                . "<td>" . $req_user_info['email'] . "</td></tr>" 
+                . "<tr><td><b>Universitetas:</b></td>"
+                . "<td>" . $req_user_info['university'] . "</td></tr>"
+                . "<tr><td><b>Kursas:</b></td>"
+                . "<td>" . $req_user_info['course'] . "</td></tr>" 
+                . "<tr><td><b>Fakultetas:</b></td>"
+                . "<td>" . $req_user_info['faculty'] . "</td></tr>" 
+                . "<tr><td><b>Telefonas:</b></td>"
+                . "<td>" . $req_user_info['phone'] . "</td></tr>" 
+                . "<tr><td><b>Adresas:</b></td>"
+                . "<td>" . $req_user_info['address'] . "</td></tr>" 
+                . "<tr><td><b>Miestas:</b></td>"
+                . "<td>" . $req_user_info['city'] . "</td></tr>" 
+                . "<tr><td><b>Sukūrimo data:</b></td>"
+                . "<td>" . $req_user_info['created'] . "</td></tr>" 
+                		."</table><br>";
+                echo "<a href=\"" . $path . "useredit.php\">Redaguoti paskyrą</a>";
                 //Jei vartotojas neprisijungęs, rodoma prisijungimo forma
                 //Jei atsiranda klaidų, rodomi pranešimai.
                 ?>

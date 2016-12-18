@@ -34,11 +34,7 @@ if ($session->logged_in) {
                                     Atgal į <a href="index.php">Pradžia</a>
                                 </td></tr></table>               
                         <br> 
-                        <?php
-                        if (isset($_SESSION['useredit'])) {
-                            unset($_SESSION['useredit']);
-                            echo "<p><b>$session->username</b>, Jūsų paskyra buvo sėkmingai atnaujinta.<br><br>";
-                        } else {
+                        <?php                        
                             echo "<div align=\"center\">";
                             if ($form->num_errors > 0) {
                                 echo "<font size=\"3\" color=\"#ff0000\">Klaidų: " . $form->num_errors . "</font>";
@@ -49,29 +45,73 @@ if ($session->logged_in) {
                             <table>
                                 <tr><td>
                                         <form action="process.php" style="text-align:left;" method="POST">
-                                            <p>Dabartinis slaptažodis:<br>
-                                                <input type="password" name="curpass" maxlength="30" size="25" value="<?php echo $form->value("curpass"); ?>">
-                                                <br><?php echo $form->error("curpass"); ?></p>
-                                            <p>Naujas slaptažodis:<br>
-                                                <input type="password" name="newpass" maxlength="30" size="25" value="<?php echo $form->value("newpass"); ?>">
-                                                <br><?php echo $form->error("newpass"); ?></p>
-                                            <p>E-paštas:<br>
-                                                <input type="text" name="email" maxlength="30" size="25" value="<?php
-                    if ($form->value("email") == "") {
-                        echo $session->userinfo['email'];
-                    } else {
-                        echo $form->value("email");
-                    }
-                            ?>"> <br><?php echo $form->error("email"); ?></p>
+                                        <?php 
+                                        echo $form->error("email");
+                                        echo $form->error("newpass"); 
+                                        echo $form->error("curpass"); ?>
+                                        <table class="table table-bordered">
+			                            <tr><td>
+			                            <p>Dabartinis slaptažodis:</p>
+			                            </td><td>
+			                            <input type="password" name="curpass" maxlength="30" size="25" value="">
+			                            </td></tr>
+			                            <tr><td>
+			                            <p>Naujas slaptažodis:</p></td>
+			                            <td><input type="password" name="newpass" maxlength="30" size="25" value="">
+			                            </td></tr>
+			                            <tr><td><p>E-paštas:<br></p></td><td>
+			                            <input type="text" name="email" maxlength="30" size="25" value="<?php  echo $session->userinfo['email']; ?>"> 
+			                            </td></tr>
+			                            <tr><td>
+			                            <p>Vardas:</p>
+			                            </td><td>
+			                            <input type="text" name="vardas" maxlength="30" size="25" value="<?php echo $session->userinfo['Vardas']; ?>"><br>
+			                            </td></tr>
+			                            <tr><td>
+			                            <p>Pavardė:<br>
+			                            </td><td>
+			                            <input type="text" name="pavarde" maxlength="30" size="25" value="<?php echo $session->userinfo['Pavarde']; ?>"><br>
+			                            </td></tr>
+			                            <tr><td>
+			                            <p>Universitetas:<br>
+			                            </td><td>
+			                            <input type="text" name="university" maxlength="30" size="25" value="<?php echo $session->userinfo['university']; ?>"><br>
+			                            </td></tr>
+			                            <tr><td>
+			                            <p>Kursas:<br>
+			                            </td><td>
+			                            <input type="text" name="course" maxlength="30" size="25" value="<?php echo $session->userinfo['course']; ?>"><br>
+			                            </td></tr>
+			                            <tr><td>
+			                            <p>Fakultetas:<br>
+			                            </td><td>
+			                            <input type="text" name="faculty" maxlength="30" size="25" value="<?php echo $session->userinfo['faculty']; ?>"><br>
+			                            </td></tr>
+			                            <tr><td>
+			                            <p>Telefonas:<br>
+			                            </td><td>
+			                            <input type="text" name="phone" maxlength="30" size="25" value="<?php echo $session->userinfo['phone']; ?>"><br>
+			                            </td></tr>
+			                            <tr><td>
+			                            <p>Adresas:<br>
+			                            </td><td>
+			                            <input type="text" name="address" maxlength="30" size="25" value="<?php echo $session->userinfo['address']; ?>"><br>
+			                            </td></tr>
+			                            <tr><td>
+			                            <p>Miestas:<br>
+			                            </td><td>
+			                            <input type="text" name="city" maxlength="30" size="25" value="<?php echo $session->userinfo['city']; ?>"><br>
+			                            </td></tr>
+			                            </table>
                                             <input type="hidden" name="subedit" value="1">
-                                            <input type="submit" value="Atnaujinti">
+                                            <input class="btn btn-lg btn-primary btn-block" type="submit" value="Atnaujinti">
                                         </form>
                                     </td></tr>
                             </table>
 
                             <?php
                             echo "</div>";
-                        }
+                        
                         ?>
                     </td></tr>
             </table>

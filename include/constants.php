@@ -11,20 +11,22 @@
  * to the MySQL database. Make sure the information is
  * correct.
  */
-define ( "DB_SERVER", "localhost" );
-define ( "DB_USER", "stud" );
-define ( "DB_PASS", "stud" );
-define ( "DB_NAME", "slc" );
+define ( "DB_SERVER", "db.if.ktu.lt" );
+define ( "DB_USER", "tomkuz" );
+define ( "DB_PASS", "EeNgeihoh9uphe8t" );
+define ( "DB_NAME", "tomkuz" );
 
 /**
  * Database Table Constants - these constants
  * hold the names of all the database tables used
  * in the script.
  */
-define ( "TBL_USERS", "users" );
-define ( "TBL_ACTIVE_USERS", "active_users" );
-define ( "TBL_ACTIVE_GUESTS", "active_guests" );
-define ( "TBL_BANNED_USERS", "banned_users" );
+define ( "TBL_USERS", "naudotojas" );
+define ( "TBL_LOGIN_HISTORY", "prisijungimo_istorija" );
+define ( "TBL_STATUS_HISTORY", "busenu_istorija" );
+define ( "TBL_PASSWORD_HISTORY", "slaptazodzio_istorija" );
+define ( "TBL_INVENTORY", "inventorius");
+
 
 /**
  * Special Names and Level Constants - the admin
@@ -50,7 +52,7 @@ define ( "GUEST_LEVEL", 0 );
  * not the script keeps track of active users
  * and active guests who are visiting the site.
  */
-define ( "TRACK_VISITORS", true );
+define ( "TRACK_VISITORS", false );
 
 /**
  * Timeout Constants - these constants refer to

@@ -78,6 +78,7 @@ class MySQLDB {
      */
     function confirmUserID($username, $userid) {
         /* Add slashes if necessary (for query) */
+    	return 0;
         if (!get_magic_quotes_gpc()) {
             $username = addslashes($username);
         }
@@ -95,11 +96,29 @@ class MySQLDB {
         $userid = stripslashes($userid);
 
         /* Validate that userid is correct */
-        if ($userid == $dbarray['userid']) {
+       // if ($userid == $dbarray['userid']) {
             return 0; //Success! Username and userid confirmed
-        } else {
-            return 2; //Indicates userid invalid
-        }
+       // } else {
+       //     return 2; //Indicates userid invalid
+       // }
+        
+    }
+    
+    function addNewInventory($itemArray)
+    {
+    	$q = "INSERT into " . TBL_INVENTORY . " (pavadinimas, vieta, busena, padetis, pastabos, ar_mobilus) values " .
+    	"('".$itemArray['invName']."', '".$itemArray['invPlace']."', '".$itemArray['invBusena']."', '".$itemArray['invPadetis']."', '".$itemArray['invPastabos']."', ".$itemArray['invMobilus'].")";
+    	$_SESSION['query'] = $q;
+    	return mysqli_query($this->connection, $q);
+    }
+    
+    function editInventory($itemArray)
+    {
+    	$q = "UPDATE " . TBL_INVENTORY . " SET pavadinimas = '".$itemArray['invName']."', vieta = '".$itemArray['invPlace']."', busena = '".$itemArray['invBusena']."',". 
+        "padetis = '".$itemArray['invPadetis']."', pastabos = '".$itemArray['invPastabos']."', ar_mobilus = ".$itemArray['invMobilus']." where pavadinimas = '".$_SESSION['oldinvpav']."'";
+    			
+    	$_SESSION['query'] = $q;
+    	return mysqli_query($this->connection, $q);
     }
 
     /**
@@ -123,7 +142,7 @@ class MySQLDB {
         if (!get_magic_quotes_gpc()) {
             $username = addslashes($username);
         }
-        $q = "SELECT username FROM " . TBL_BANNED_USERS . " WHERE username = '$username'";
+        $q = "SELECT username FROM " . TBL_USERS . " WHERE username = '$username' and busena = 'B'";
         $result = mysqli_query($this->connection, $q);
         return (mysqli_num_rows($result) > 0);
     }
@@ -133,15 +152,10 @@ class MySQLDB {
      * info into the database. Appropriate user level is set.
      * Returns true on success, false otherwise.
      */
-    function addNewUser($username, $password, $email) {
-        $time = time();
-        /* If admin sign up, give admin user level */
-        if (strcasecmp($username, ADMIN_NAME) == 0) {
-            $ulevel = ADMIN_LEVEL;
-        } else {
-            $ulevel = USER_LEVEL;
-        }
-        $q = "INSERT INTO " . TBL_USERS . " VALUES ('$username', '$password', '0', $ulevel, '$email', $time)";
+    function addNewUser($username, $password, $email, $level) {        
+        
+        $q = "INSERT INTO " . TBL_USERS . " (username, password, userlevel, email, created) VALUES ('$username', '$password', $level, '$email', now())";
+        $_SESSION['query'] = $q;
         return mysqli_query($this->connection, $q);
     }
 
@@ -153,6 +167,35 @@ class MySQLDB {
         $q = "UPDATE " . TBL_USERS . " SET " . $field . " = '$value' WHERE username = '$username'";
         return mysqli_query($this->connection, $q);
     }
+    
+    function selectUserID($username) {
+    	$q = "select id from " . TBL_USERS . " WHERE username = '$username'";
+    	$result = mysqli_query($this->connection, $q);
+    	return mysqli_fetch_array($result);
+    }
+    
+    function selectTimeNow() {
+    	$q = "select now() from dual";
+    	$result = mysqli_query($this->connection, $q); 
+    	$time = mysqli_fetch_array($result);
+    	return $time['now()'];
+    }
+    
+    function setLoginHistory($id, $ip) {
+    	$q = "insert into " . TBL_LOGIN_HISTORY . " (naudotojo_id, ip, data) values (". $id .", '". $ip ."', now()) ";
+    	return mysqli_query($this->connection, $q);
+    }
+    
+    function setStatusHistory($id, $busena) {
+    	$q = "insert into " . TBL_STATUS_HISTORY . " (naudotojo_id, busena, data) values (". $id .", '". $busena ."', now()) ";
+    	return mysqli_query($this->connection, $q);
+    }
+    
+    function setPasswordHistory($id, $password) {
+    	$q = "insert into " . TBL_PASSWORD_HISTORY . " (naudotojo_id, password, data) values (". $id .", '". $password ."', now()) ";
+    	return mysqli_query($this->connection, $q);
+    }
+    
 
     /**
      * getUserInfo - Returns the result array from a mysql
@@ -160,7 +203,7 @@ class MySQLDB {
      * the given username. If query fails, NULL is returned.
      */
     function getUserInfo($username) {
-        $q = "SELECT * FROM " . TBL_USERS . " WHERE username = '$username'";
+        $q = "SELECT * FROM " . TBL_USERS . " WHERE username = '$username' ";
         $result = mysqli_query($this->connection, $q);
         /* Error occurred, return given name by default */
         if (!$result || (mysqli_num_rows($result) < 1)) {

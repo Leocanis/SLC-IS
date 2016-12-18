@@ -1,6 +1,6 @@
 <?php
 include("include/session.php");
-if ($session->logged_in) {
+if (!$session->logged_in) {
     header("Location: index.php");
 } else {
     ?>
@@ -14,15 +14,29 @@ if ($session->logged_in) {
 			<!-- Latest compiled JavaScript -->
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+			<link rel="stylesheet" href="style/style.css">	
 		
         </head>
-        <body>   
-            <table class="center"><tr><td>
-                        <img src="pictures/top.png"/>
-                    </td></tr><tr><td> 
-                        <table style="border-width: 2px; border-style: dotted;"><tr><td>
-                                    Atgal į [<a href="index.php">Pradžia</a>]
-                                </td></tr></table>               
+        <body>
+         <div class="container">
+		 <div class="wrapper"> 
+            <table class="center">
+            <tr><td>
+                        <?php
+						include("include/header.php");
+						?>	
+                    </td></tr>
+                    <tr><td>
+                    <?php 
+				        include ("include/meniu.php");
+				        ?>  
+                    </td></tr> 
+                    <tr><td>
+                        <table><tr><td>
+                                    Atgal į <a href="index.php">Pradžia</a>
+                        </td></tr></table>  
+                        </td></tr>
+                        <tr><td>             
                         <?php
                         /**
                          * The user has submitted the registration form and the
@@ -30,11 +44,11 @@ if ($session->logged_in) {
                          */ if (isset($_SESSION['regsuccess'])) {
                             /* Registracija sėkminga */
                             if ($_SESSION['regsuccess']) {
-                                echo "<p>Ačiū, <b>" . $_SESSION['reguname'] . "</b>, Jūsų duomenys buvo sėkmingai įvesti į duomenų bazę, galite "
-                                . "<a href=\"index.php\">prisijungti</a>.</p><br>";
+                                echo "<p><b>" . $_SESSION['reguname'] . "</b> duomenys buvo sėkmingai įvesti į duomenų bazę. "
+                                . "</p><br>";
                             }
                             /* Registracija nesėkminga */ else {
-                                echo "<p>Atsiprašome, bet vartotojo <b>" . $_SESSION['reguname'] . "</b>, "
+                                echo "<p>Atsiprašome, bet vartotojo <b>" . $_SESSION['reguname'] . $_SESSION['lygis'] . $_SESSION['query'] .   "</b>, "
                                 . " registracija nebuvo sėkmingai baigta.<br>Bandykite vėliau.</p>";
                             }
                             unset($_SESSION['regsuccess']);
@@ -53,28 +67,52 @@ if ($session->logged_in) {
                                     echo "<font size=\"3\" color=\"#ff0000\">Klaidų: " . $form->num_errors . "</font>";
                                 }
                                 ?>                            
-                                <table>
-                                    <tr><td>
-                                            <form action="process.php" method="POST" class="login">              
-                                                <center style="font-size:18pt;"><b>Registracija</b></label></center>
-                                                <p style="text-align:left;">Vartotojo vardas:
+                                
+                                            <form action="process.php" method="POST" class="login">
+                                                <?php echo $form->error("user"); ?>
+                                                <?php echo $form->error("pass"); ?>     
+                                                <?php echo $form->error("email"); ?>     
+                                                <center style="font-size:18pt;"><b>Registracija</b></center></td></tr>
+                                                <tr><td>
+                                                <table class="table table-bordered">
+                                                <tr><td>
+                                                Vartotojo vardas:
+                                                </td><td>
                                                     <input class ="s1" name="user" type="text" size="15"
-                                                           value="<?php echo $form->value("user"); ?>"/><br><?php echo $form->error("user"); ?>
-                                                </p>
-                                                <p style="text-align:left;">Slaptažodis:
+                                                           value="<?php echo $form->value("user"); ?>"/>
+                                                </td></tr>
+                                                <tr><td>
+                                                Slaptažodis: 
+                                                </td><td>
                                                     <input class ="s1" name="pass" type="password" size="15"
-                                                           value="<?php echo $form->value("pass"); ?>"/><br><?php echo $form->error("pass"); ?>
-                                                </p>  
-                                                <p style="text-align:left;">E-paštas:
+                                                           value="<?php echo $form->value("pass"); ?>"/>
+                                                </td></tr>
+                                                <tr><td>
+                                                E-paštas:
+                                                </td><td>
                                                     <input class ="s1" name="email" type="text" size="15"
-                                                           value="<?php echo $form->value("email"); ?>"/><br><?php echo $form->error("email"); ?>
-                                                </p>  
-                                                <p style="text-align:left;">
+                                                           value="<?php echo $form->value("email"); ?>"/>
+                                                </td></tr>                                                
+                                                 <tr><td>
+                                                Lygis:
+                                                </td><td>                                                    
+                                                    <select name="level">
+                                                    <?php if($session->isAdmin()) { 
+													  echo "<option value=\"9\">Administratorius</option>";
+													  echo "<option value=\"5\">Budėtojas</option>";
+                                                    }
+													  ?>
+													  <option value="1">Lankytojas</option>
+													</select>     
+                                                      
+                                                </td></tr>
+                                                </table> 
+                                                <p class="center_align">                                                
                                                     <input type="hidden" name="subjoin" value="1">
-                                                    <input type="submit" value="Registruotis">
-                                                </p>
+                                                    <input class="btn btn-lg btn-primary btn-block" type="submit" value="Registruotis">                                                    
+                                                </p>                                               
                                             </form>
-                                        </td></tr></table>
+                                        
                             </div>
                             <?php
                         }
@@ -83,7 +121,9 @@ if ($session->logged_in) {
                         echo "</td></tr>";
                         ?>
                     </td></tr>
-            </table>           
+            </table>  
+            </div>
+            </div>         
         </body>
     </html>
     <?php
