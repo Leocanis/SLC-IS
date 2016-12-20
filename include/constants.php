@@ -11,10 +11,16 @@
  * to the MySQL database. Make sure the information is
  * correct.
  */
-define ( "DB_SERVER", "db.if.ktu.lt" );
-define ( "DB_USER", "tomkuz" );
-define ( "DB_PASS", "EeNgeihoh9uphe8t" );
-define ( "DB_NAME", "tomkuz" );
+
+//define ( "DB_SERVER", "db.if.ktu.lt" );
+//define ( "DB_USER", "tomkuz" );
+//define ( "DB_PASS", "EeNgeihoh9uphe8t" );
+//define ( "DB_NAME", "tomkuz" );
+
+define ( "DB_SERVER", "localhost" );
+define ( "DB_USER", "stud" );
+define ( "DB_PASS", "stud" );
+define ( "DB_NAME", "slc" );
 
 /**
  * Database Table Constants - these constants
@@ -26,6 +32,7 @@ define ( "TBL_LOGIN_HISTORY", "prisijungimo_istorija" );
 define ( "TBL_STATUS_HISTORY", "busenu_istorija" );
 define ( "TBL_PASSWORD_HISTORY", "slaptazodzio_istorija" );
 define ( "TBL_INVENTORY", "inventorius");
+define ( "TBL_RESERVATION", "Rezervacija");
 
 
 /**

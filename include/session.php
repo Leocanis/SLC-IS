@@ -335,6 +335,29 @@ class Session {
     	return true;
     	 
     }
+    
+    function addReservation($itemArray)
+    {
+    	global $database, $form;
+    	
+    	$inventorID = $database->selectInvID($itemArray['invName']);
+    	$naudotojoID = $database->selectUserID($this->username);
+    	
+    	$itemArray['invID'] = $inventorID['id'];
+    	$itemArray['userID'] = $naudotojoID['id'];
+    	
+    	$check = $database->checkReservation($itemArray);
+    	
+    	if($check > 0){
+    		$_SESSION['reserror'] = "Rezervacijos laikas užimtas!";
+    		return false;
+    	}
+    
+    	$database->addReservation($itemArray);
+    
+    	return true;
+    
+    }
 
     /**
      * editAccount - Attempts to edit the user's account information

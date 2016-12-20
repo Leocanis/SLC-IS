@@ -117,8 +117,34 @@ class MySQLDB {
     	$q = "UPDATE " . TBL_INVENTORY . " SET pavadinimas = '".$itemArray['invName']."', vieta = '".$itemArray['invPlace']."', busena = '".$itemArray['invBusena']."',". 
         "padetis = '".$itemArray['invPadetis']."', pastabos = '".$itemArray['invPastabos']."', ar_mobilus = ".$itemArray['invMobilus']." where pavadinimas = '".$_SESSION['oldinvpav']."'";
     			
-    	$_SESSION['query'] = $q;
+    	
     	return mysqli_query($this->connection, $q);
+    }
+    
+    function selectInvID($pavadinimas) {
+    	$q = "select id from " . TBL_INVENTORY . " WHERE pavadinimas = '$pavadinimas'";
+    	$result = mysqli_query($this->connection, $q);
+    	return mysqli_fetch_array($result);
+    }
+    
+    function addReservation($itemArray)
+    {
+    	$q = "INSERT into " . TBL_RESERVATION . " (naudotojo_id, inventoriaus_id, galioja_nuo, galioja_iki, komentaras, zmoniu_kieks) values " .
+    	"('".$itemArray['userID']."', '".$itemArray['invID']."', '".$itemArray['invNuo']."', '".$itemArray['invIki'].
+    	"', '".$itemArray['invKom']."', ".$itemArray['invKiekis'].")";
+    	
+    	 
+    	return mysqli_query($this->connection, $q);
+    }
+    
+    function checkReservation($itemArray)
+    {
+    	$q = "select id from  " . TBL_RESERVATION . " where galioja_iki > '".
+    	$itemArray['invNuo'] . "' and galioja_nuo < '" .$itemArray['invIki'] ."' and inventoriaus_id = " . $itemArray['invID'];
+    	
+    	$_SESSION['query1'] = $q;
+    	$result = mysqli_query($this->connection, $q);
+    	return mysqli_num_rows($result);
     }
 
     /**

@@ -22,10 +22,12 @@ if (isset($session) && $session->logged_in) {
 			  ."<a class=\"dropdown-toggle\" data-toggle=\"dropdown\" href=\"#\">Inventorius<span class=\"caret\"></span></a>"
 			  ."<ul class=\"dropdown-menu\">"
 			  ."<li><a href=\"" . $path ."inventorius/inventorius.php\">Naujas inventorius</a></li> "
-			  ."<li><a href=\"" . $path ."inventorius/inventoriuslist.php\">Inventoriaus sąrašas</a></li> ";
+			  ."<li><a href=\"" . $path ."inventorius/inventoriuslist.php\">Inventoriaus sąrašas</a></li> "
+			  ."<li><a href=\"" . $path ."inventorius/radiniai.php\">Radiniai</a></li> ";
 			  //Trečia operacija rodoma valdytojui ir administratoriui
 				if ($session->isManager() || $session->isAdmin()) {
-			//		echo "<li><a href=\"" . $path . "operacija3.php\">Demo operacija3</a></li>";
+					echo "<li><a href=\"" . $path . "inventorius/inventoriusrezervacija.php\">Inventoriaus rezervacija</a></li>";
+					echo "<li><a href=\"" . $path . "inventorius/reservationlist.php\">Rezervacijų sąrašas</a></li>";
 				}
 				echo "</ul>";
 				echo "</li>";

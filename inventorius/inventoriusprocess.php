@@ -25,6 +25,10 @@ class Process {
 		else if(isset($_POST['editinventor']))
 		{
 			$this->procEditInventor();
+		}		
+		else if(isset($_POST['subaddreservation']))
+		{
+			$this->procAddReservation();
 		}
 		
 		/**
@@ -42,13 +46,12 @@ class Process {
 		$itemArray = array();
 		 
 		$itemArray['invName'] = $_POST['invName'];
-		$itemArray['invPlace'] = $_POST['invPlace'];
-		$itemArray['invBusena'] = $_POST['invBusena'];
-		$itemArray['invPadetis'] = $_POST['invPadetis'];
-		$itemArray['invPastabos'] = $_POST['invPastabos'];
-		$itemArray['invMobilus'] = (isset($_POST['invMobilus'])) ? 1 : 0;
+		$itemArray['invPlace'] = $_POST['invNuo'];
+		$itemArray['invBusena'] = $_POST['invIki'];
+		$itemArray['invPadetis'] = $_POST['invKom'];
+		$itemArray['invPastabos'] = $_POST['invKiekis'];
 		 
-		$retval = $session->addNewInventory($itemArray);
+		
 		 
 		if ($retval) {
 			$_SESSION['newinv'] = true;
@@ -97,6 +100,32 @@ class Process {
 		if ($retval) {
 			$_SESSION['newinv'] = true;
 			header("Location: " . $path . "inventoriuslist.php");
+		}
+		/* Error found with form */
+		else {
+			$_SESSION['value_array'] = $_POST;
+			$_SESSION['error_array'] = $form->getErrorArray();
+			header("Location: " . $session->referrer);
+		}
+	}
+	
+	function procAddReservation()
+	{
+		global $session, $form;
+			
+		$itemArray = array();
+			
+		$itemArray['invName'] = $_POST['invName'];
+		$itemArray['invNuo'] = $_POST['invNuo'];
+		$itemArray['invIki'] = $_POST['invIki'];
+		$itemArray['invKom'] = $_POST['invKom'];
+		$itemArray['invKiekis'] = $_POST['invKiekis'];
+	
+		$retval = $session->addReservation($itemArray);
+	
+		if ($retval) {
+			$_SESSION['newrez'] = true;
+			header("Location: " . $path . "inventoriusrezervacija.php");
 		}
 		/* Error found with form */
 		else {

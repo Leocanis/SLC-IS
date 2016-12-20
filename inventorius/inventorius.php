@@ -103,6 +103,6 @@ if ($session->logged_in) {
     <?php
     //Jei vartotojas neprisijungęs, užkraunamas pradinis puslapis  
 } else {
-    header("Location: index.php");
+    header("Location: ../index.php");
 }
 ?>

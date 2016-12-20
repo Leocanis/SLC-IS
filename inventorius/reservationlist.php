@@ -1,13 +1,15 @@
 <?php
+
 include("../include/session.php");
 
-function displayInventor()
+
+function displayReservation()
 {
 	global $database;
-	
-	$q = "select * from inventorius order by pavadinimas";
+
+	$q = "SELECT i.pavadinimas, n.username, r.galioja_nuo, r.galioja_iki, r.komentaras, r.zmoniu_kieks FROM rezervacija r, naudotojas n, inventorius i where i.id = r.inventoriaus_id and r.naudotojo_id = n.id";
 	$result = $database->query($q);
-	
+
 	$num_rows = mysqli_num_rows($result);
 	if (!$result || ($num_rows < 0)) {
 		echo "Error displaying info";
@@ -17,39 +19,29 @@ function displayInventor()
 		echo "Lentelė tuščia.";
 		return;
 	}
-	
-	
-	
+
+
+
 	echo "<table class=\"table\">";
 	echo "<thead class=\"table-hover\"><tr>
-			<th>Pavadinimas</th>
-    		<th>Vieta</th>
-    		<th>Būsena</th>
-    		<th>Padėtis</th>
-    		<th>Pastabos</th>
-			<th>Ar mobilus</th>
-			<th>Veiksmai</th></tr></thead><tbody>";
+			<th>Inventorius</th>
+    		<th>Naudotojas</th>
+    		<th>Galioja nuo</th>
+    		<th>Galioja iki</th>
+			<th>Komentaras</th>
+			<th>Žmonių kiekis</th></tr></thead><tbody>";
 	for ($i = 0; $i < $num_rows; $i++) {
-		
-		
+
+
 		echo "<tr>";
 		echo "<td>". mysqli_result($result, $i, "pavadinimas") ." </td>";
-		echo "<td>". mysqli_result($result, $i, "vieta") ." </td>";
-		echo "<td>". mysqli_result($result, $i, "busena") ." </td>";
-		echo "<td>". mysqli_result($result, $i, "padetis") ." </td>";
-		echo "<td>". mysqli_result($result, $i, "pastabos") ." </td>";
-		echo "<td> <input type=\"checkbox\" disabled "; 
-		if(mysqli_result($result, $i, "ar_mobilus") == 1){
-			echo " checked ";
-		}
-		else{
-			echo " unchecked ";
-		}
-		echo " ></td>";
-		echo "<td><a href='inventoriusprocess.php?e=1&invedit=".mysqli_result($result, $i, "pavadinimas")."'";
-		echo ">Redaguoti</a> | <a href='inventoriusprocess.php?d=1&invdel=".mysqli_result($result, $i, "pavadinimas")."'>Trinti</a></td>";
+		echo "<td>". mysqli_result($result, $i, "username") ." </td>";
+		echo "<td>". mysqli_result($result, $i, "galioja_nuo") ." </td>";
+		echo "<td>". mysqli_result($result, $i, "galioja_iki") ." </td>";
+		echo "<td>". mysqli_result($result, $i, "komentaras") ." </td>";
+		echo "<td>". mysqli_result($result, $i, "zmoniu_kieks") ." </td>";		
 		echo "</tr>";
-		
+
 	}
 	echo "</tbody></table>";
 }
@@ -59,7 +51,6 @@ function mysqli_result($res, $row, $field=0) {
 	$datarow = $res->fetch_array();
 	return $datarow[$field];
 }
-
 
 if ($session->logged_in) {
     ?>
@@ -94,7 +85,7 @@ if ($session->logged_in) {
                         <br> 
                         
                         <?php 
-                        displayInventor();
+                        displayReservation();
                         ?>
                          
                         <br>  
