@@ -29,6 +29,8 @@ if (isset($session) && $session->logged_in) {
 				if ($session->isManager() || $session->isAdmin()) {
 					echo "<li><a href=\"" . $path . "inventorius/inventoriusrezervacija.php\">Inventoriaus rezervacija</a></li>";
 					echo "<li><a href=\"" . $path . "inventorius/reservationlist.php\">Rezervacijų sąrašas</a></li>";
+					echo "<li><a href=\"" . $path . "inventorius/imone.php\">Nauja įmonė</a></li>";
+					echo "<li><a href=\"" . $path . "inventorius/imonelist.php\">Įmonių sąrašas</a></li>";
 				}
 				echo "</ul>";
 				echo "</li>";

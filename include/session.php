@@ -383,6 +383,17 @@ class Session {
     	return true;
     
     }
+    
+    function addImone($itemArray)
+    {
+    	global $database, $form;
+    	 
+    
+    	$database->addImone($itemArray);
+    
+    	return true;
+    
+    }
 
     /**
      * editAccount - Attempts to edit the user's account information

@@ -132,6 +132,22 @@ class MySQLDB {
     	$q = "INSERT into " . TBL_RADINYS . " (naudotojo_id, kur_rasta, name, komentaras) values " .
     	"('".$itemArray['userID']."', '".$itemArray['radname']."', '".$itemArray['radplace']."', '".$itemArray['radkom']."')";
     	
+    	return mysqli_query($this->connection, $q);
+    }
+    
+    function addImone($itemArray)
+    {
+    	$q = "INSERT into " . TBL_COMPANY . " (pavadinimas, imones_kodas, imones_adresas, imones_miestas, imones_kontaktinis_email, imones_kontaktinis_telnr, ".
+    	"imones_kontaktinis_asmuo, banko_saskaita) values (" .
+    	"'".$itemArray['compname']. "', ".
+    	"'".$itemArray['compcode']. "', ".
+    	"'".$itemArray['compadd']. "', ".
+    	"'".$itemArray['compcity']. "', ".
+    	"'".$itemArray['compper']. "', ".
+    	"'".$itemArray['compphone']. "', ".
+    	"'".$itemArray['compemail']. "', ".
+    	"'".$itemArray['compbac']."')";
+    	 
     	$_SESSION['query2'] = $q;
     	return mysqli_query($this->connection, $q);
     }

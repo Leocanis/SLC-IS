@@ -34,6 +34,7 @@ define ( "TBL_PASSWORD_HISTORY", "slaptazodzio_istorija" );
 define ( "TBL_INVENTORY", "inventorius");
 define ( "TBL_RESERVATION", "Rezervacija");
 define ( "TBL_RADINYS", "radiniai");
+define ( "TBL_COMPANY", "imones");
 
 
 /**

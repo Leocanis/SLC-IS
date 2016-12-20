@@ -38,11 +38,44 @@ class Process {
 		{
 			$this->procRemRadinys();
 		}
+		else if(isset($_POST['subaddcompany']))
+		{
+			$this->procAddImone();
+		}
 		/**
 		 * Should not get here, which means user is viewing this page
 		 * by mistake and therefore is redirected.
 		 */ else {
 		 header("Location: index.php");
+		}
+	}
+	
+	function procAddImone()
+	{
+		global $session, $form;
+			
+		$itemArray = array();
+			
+		$itemArray['compname'] = $_POST['compname'];
+		$itemArray['compcode'] = $_POST['compcode'];
+		$itemArray['compadd'] = $_POST['compadd'];
+		$itemArray['compcity'] = $_POST['compcity'];
+		$itemArray['compper'] = $_POST['compper'];
+		$itemArray['compphone'] = $_POST['compphone'];
+		$itemArray['compemail'] = $_POST['compemail'];
+		$itemArray['compbac'] = $_POST['compbac'];
+			
+		$retval = $session->addImone($itemArray);
+			
+		if ($retval) {
+			$_SESSION['newcomp'] = true;
+			header("Location: " . $session->referrer);
+		}
+		/* Error found with form */
+		else {
+			$_SESSION['value_array'] = $_POST;
+			$_SESSION['error_array'] = $form->getErrorArray();
+			header("Location: " . $session->referrer);
 		}
 	}
 	
