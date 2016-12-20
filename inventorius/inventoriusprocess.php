@@ -30,12 +30,64 @@ class Process {
 		{
 			$this->procAddReservation();
 		}
-		
+		else if(isset($_POST['subaddrad']))
+		{
+			$this->procAddRadinys();
+		}
+		else if(isset($_GET['rr']))
+		{
+			$this->procRemRadinys();
+		}
 		/**
 		 * Should not get here, which means user is viewing this page
 		 * by mistake and therefore is redirected.
 		 */ else {
 		 header("Location: index.php");
+		}
+	}
+	
+	function procRemRadinys()
+	{
+		global $session;
+		
+		$radid = $_REQUEST['radid'];			
+			
+		
+		$retval = $session->remRadinys($radid);
+			
+		if ($retval) {
+			$_SESSION['remrad'] = true;
+			header("Location: " . $session->referrer);
+		}
+		/* Error found with form */
+		else {
+			$_SESSION['value_array'] = $_POST;
+			$_SESSION['error_array'] = $form->getErrorArray();
+			header("Location: " . $session->referrer);
+		}
+	}
+	
+	function procAddRadinys()
+	{
+		global $session, $form;
+			
+		$itemArray = array();
+			
+		$itemArray['radname'] = $_POST['radname'];
+		$itemArray['radplace'] = $_POST['radplace'];
+		$itemArray['radkom'] = $_POST['radkom'];
+			
+		$retval = $session->addRadinys($itemArray);
+			
+		if ($retval) {
+			$_SESSION['newrad'] = true;
+			header("Location: " . $session->referrer);
+		}
+		/* Error found with form */
+		else {
+			$_SESSION['value_array'] = $_POST;
+			$_SESSION['error_array'] = $form->getErrorArray();
+			header("Location: " . $session->referrer);
 		}
 	}
 	
@@ -46,12 +98,12 @@ class Process {
 		$itemArray = array();
 		 
 		$itemArray['invName'] = $_POST['invName'];
-		$itemArray['invPlace'] = $_POST['invNuo'];
-		$itemArray['invBusena'] = $_POST['invIki'];
-		$itemArray['invPadetis'] = $_POST['invKom'];
-		$itemArray['invPastabos'] = $_POST['invKiekis'];
+		$itemArray['invPlace'] = $_POST['invPlace'];
+		$itemArray['invBusena'] = $_POST['invBusena'];
+		$itemArray['invPadetis'] = $_POST['invPadetis'];
+		$itemArray['invPastabos'] = $_POST['invPastabos'];
 		 
-		
+		$retval = $session->addNewInventory($itemArray);
 		 
 		if ($retval) {
 			$_SESSION['newinv'] = true;

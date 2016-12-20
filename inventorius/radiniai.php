@@ -3,12 +3,6 @@ include("../include/session.php");
 //Jei prisijunges Administratorius ar Valdytojas vykdomas operacija3 kodas
 if ($session->logged_in && ($session->isAdmin() || $session->isManager())) {
 	
-	function mysqli_result($res, $row, $field=0) {
-		$res->data_seek($row);
-		$datarow = $res->fetch_array();
-		return $datarow[$field];
-	}
-	
     ?>    
     <html>  
         <head>  
@@ -43,6 +37,10 @@ if ($session->logged_in && ($session->isAdmin() || $session->isManager())) {
                         <form action="inventoriusprocess.php" style="text-align:left;" method="POST">
                         <?php                        
                        
+                        if(isset($_SESSION['newrad'])){
+                        	echo "Radinys sėkmingai pridėtas!";
+                        	unset($_SESSION['newrad']);
+                        }
                         	                        
                         ?>
                         

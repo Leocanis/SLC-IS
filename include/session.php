@@ -358,6 +358,31 @@ class Session {
     	return true;
     
     }
+    
+    function addRadinys($itemArray)
+    {
+    	global $database, $form;
+    	
+    	$naudotojoID = $database->selectUserID($this->username);
+    	 
+    	$itemArray['userID'] = $naudotojoID['id'];
+    
+    	$database->addRadinys($itemArray);
+    
+    	return true;
+    
+    }
+    
+    function remRadinys($radid)
+    {
+    	global $database, $form;
+    	 
+    
+    	$database->remRadinys($radid);
+    
+    	return true;
+    
+    }
 
     /**
      * editAccount - Attempts to edit the user's account information

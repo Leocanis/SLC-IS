@@ -23,7 +23,8 @@ if (isset($session) && $session->logged_in) {
 			  ."<ul class=\"dropdown-menu\">"
 			  ."<li><a href=\"" . $path ."inventorius/inventorius.php\">Naujas inventorius</a></li> "
 			  ."<li><a href=\"" . $path ."inventorius/inventoriuslist.php\">Inventoriaus sąrašas</a></li> "
-			  ."<li><a href=\"" . $path ."inventorius/radiniai.php\">Radiniai</a></li> ";
+			  ."<li><a href=\"" . $path ."inventorius/radiniai.php\">Radiniai</a></li> "
+		  	  ."<li><a href=\"" . $path ."inventorius/radiniailist.php\">Radinių sąrašas</a></li> ";
 			  //Trečia operacija rodoma valdytojui ir administratoriui
 				if ($session->isManager() || $session->isAdmin()) {
 					echo "<li><a href=\"" . $path . "inventorius/inventoriusrezervacija.php\">Inventoriaus rezervacija</a></li>";

@@ -108,7 +108,7 @@ class MySQLDB {
     {
     	$q = "INSERT into " . TBL_INVENTORY . " (pavadinimas, vieta, busena, padetis, pastabos, ar_mobilus) values " .
     	"('".$itemArray['invName']."', '".$itemArray['invPlace']."', '".$itemArray['invBusena']."', '".$itemArray['invPadetis']."', '".$itemArray['invPastabos']."', ".$itemArray['invMobilus'].")";
-    	$_SESSION['query'] = $q;
+    	
     	return mysqli_query($this->connection, $q);
     }
     
@@ -127,13 +127,28 @@ class MySQLDB {
     	return mysqli_fetch_array($result);
     }
     
+    function addRadinys($itemArray)
+    {
+    	$q = "INSERT into " . TBL_RADINYS . " (naudotojo_id, kur_rasta, name, komentaras) values " .
+    	"('".$itemArray['userID']."', '".$itemArray['radname']."', '".$itemArray['radplace']."', '".$itemArray['radkom']."')";
+    	
+    	$_SESSION['query2'] = $q;
+    	return mysqli_query($this->connection, $q);
+    }
+    
+    function remRadinys($radid)
+    {
+    	$q = "DELETE FROM " . TBL_RADINYS . " WHERE id = ".$radid;
+    	return mysqli_query($this->connection, $q);
+    }
+    
     function addReservation($itemArray)
     {
     	$q = "INSERT into " . TBL_RESERVATION . " (naudotojo_id, inventoriaus_id, galioja_nuo, galioja_iki, komentaras, zmoniu_kieks) values " .
-    	"('".$itemArray['userID']."', '".$itemArray['invID']."', '".$itemArray['invNuo']."', '".$itemArray['invIki'].
-    	"', '".$itemArray['invKom']."', ".$itemArray['invKiekis'].")";
-    	
+    			"('".$itemArray['userID']."', '".$itemArray['invID']."', '".$itemArray['invNuo']."', '".$itemArray['invIki'].
+    			"', '".$itemArray['invKom']."', ".$itemArray['invKiekis'].")";
     	 
+       
     	return mysqli_query($this->connection, $q);
     }
     
