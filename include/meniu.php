@@ -34,6 +34,10 @@ if (isset($session) && $session->logged_in) {
 				}
 				echo "</ul>";
 				echo "</li>";
+			  	echo "<li class=\"dropdown\"><a class=\"dropdown-toggle\" data-toggle=\"dropdown\" href=\"#\">Renginiai<span class=\"caret\"></span></a><ul class=\"dropdown-menu\"><li><a href=\"" . $path ."renginiai/renginiai.php\">Renginių sąrašas</li>";
+			  	echo '<li><a href="'.$path.'renginiai/renginiaiform.php">Naujas renginys</li>';
+				echo "</ul>";
+				echo "</li>";
 				if ($session->isAdmin()) {
 					echo "<li><a href=\"" . $path . "admin/admin.php\">Administratoriaus sąsaja</a></li>";
 				}
