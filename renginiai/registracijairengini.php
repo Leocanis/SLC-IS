@@ -1,31 +1,38 @@
 <?php
 include("../include/session.php");
 
-function show_list() {
+if(isset($_POST["papildoma_info"])) {
+    //insert
+
+}
+
+if(isset($_POST["pavadinimas"])) {
+    //insert
+    $result = $database->query("insert into renginiai (pavadinimas, pradzia, pabaiga, aprasymas, statusas) values ('".$_POST["pavadinimas"]."', '".$_POST["pradzia"]."', '".$_POST["pabaiga"]."', '".$_POST["aprasymas"]."', '".$_POST["statusas"]."')");
+    $_POST = array();
+}
+
+function show_form() {
+    global $session;
 	global $database;
-	global $session;
-	echo '<table class="table"><thead><tr><th>Pavadinimas</th><th>Pradžia</th><th>Pabaiga</th><th>Statusas</th><th>Turnyras</th><th>Veiksmai</th></tr></thead><tbody>';
-	if ($result = $database->query("select * from renginiai where (statusas = 1 or statusas = 0)")) {
-		while ($row = $result->fetch_assoc()) {
-	        echo '<tr><td>'.$row["pavadinimas"].'</td><td>'.$row["pradzia"].'</td><td>'.$row["pabaiga"].'</td><td>'.$row["statusas"].'</td><td>';
-	        if($row["turnyro_dalyviu_lentele"] == "") {
-	        	echo 'Nėra';
-	        } else {
-	        	echo '<a href="turnyras.php?trnid='.$row["turnyro_dalyviu_lentele"].'">Turnyrinė lentelė</a>';
-	        }
-	        echo '</td><td>';
-	        if ($session->isManager() || $session->isAdmin()) {
-	        	echo '<a href="renginiaiform.php?rngid='.$row["id"].'">Keisti</a>|';
-	        }
-	        if ($session->isAdmin()) {
-	        	echo '<a href="trintirengini.php?rngid='.$row["id"].'">Naikinti</a>|';
-	        }
-	        echo '<a href="renginys.php?rngid='.$row["id"].'">Info</a></td></tr>';
-	    }
-	} else {
-		echo 'tuščia';
-	}
-    echo '</tbody></table>';
+    $naudotojoID = $database->selectUserID($session->username);
+    if(isset($_POST["papildoma_info"])) {
+        $result = $database->query("insert into renginiu_dalyviai (naudotojo_id, renginio_id, patvirtinimas, papildoma_info) values (".$naudotojoID['id'].", ".$_POST["rngid"].", 0, '".$_POST["papildoma_info"]."')");
+        echo 'Registracija sėkminga <a href="renginys.php?rngid='.$_POST["rngid"].'">Atgal</a>';
+        $_POST = array();
+    } else {
+        if(isset($_GET["rngid"])) {
+            $result = $database->query("select * from renginiu_dalyviai rd where rd.renginio_id =".$_GET["rngid"]." and rd.naudotojo_id = ".$naudotojoID['id']);
+            if($dalyvis = $result->fetch_assoc()) {
+                echo 'Jau užsiregistravote į šį renginį';
+            } else {
+                echo '<form method="post">';
+                echo '<input type="hidden" name="rngid" value="'.$_GET["rngid"].'">';
+                echo '<div class="form-group"><label for="papildoma_info">Papildoma informacija</label><textarea class="form-control" rows="10" id="papildoma_info" name="papildoma_info"></textarea></div>';
+                echo '<button type="submit" class="btn btn-default">Registruotis</button></form>';
+            }
+        }
+    }
 }
 
 
@@ -34,7 +41,7 @@ if ($session->logged_in) {
     <html>
         <head>  
             <meta http-equiv="X-UA-Compatible" content="IE=9; text/html; charset=utf-8"/> 
-            <title>SLC IS</title>
+            <title>SLC ĮS</title>
 			<!-- jQuery library -->
 			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
@@ -62,7 +69,7 @@ if ($session->logged_in) {
                         <br> 
                         
                         <?php 
-                        show_list();
+                        show_form();
                         ?>
                          
                         <br>  
