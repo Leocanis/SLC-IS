@@ -20,17 +20,19 @@ if (isset($session) && $session->logged_in) {
 			."<ul class=\"nav navbar-nav\">"
 			  ."<li class=\"dropdown\">"
 			  ."<a class=\"dropdown-toggle\" data-toggle=\"dropdown\" href=\"#\">Inventorius<span class=\"caret\"></span></a>"
-			  ."<ul class=\"dropdown-menu\">"
-			  ."<li><a href=\"" . $path ."inventorius/inventorius.php\">Naujas inventorius</a></li> "
-			  ."<li><a href=\"" . $path ."inventorius/inventoriuslist.php\">Inventoriaus sąrašas</a></li> "
+			  ."<ul class=\"dropdown-menu\">"			  
 			  ."<li><a href=\"" . $path ."inventorius/radiniai.php\">Radiniai</a></li> "
 		  	  ."<li><a href=\"" . $path ."inventorius/radiniailist.php\">Radinių sąrašas</a></li> ";
+		  	  echo "<li><a href=\"" . $path . "inventorius/inventoriusrezervacija.php\">Inventoriaus rezervacija</a></li>";
+		  	  echo "<li><a href=\"" . $path . "inventorius/reservationlist.php\">Rezervacijų sąrašas</a></li>";
 			  //Trečia operacija rodoma valdytojui ir administratoriui
 				if ($session->isManager() || $session->isAdmin()) {
-					echo "<li><a href=\"" . $path . "inventorius/inventoriusrezervacija.php\">Inventoriaus rezervacija</a></li>";
-					echo "<li><a href=\"" . $path . "inventorius/reservationlist.php\">Rezervacijų sąrašas</a></li>";
+					echo "<li><a href=\"" . $path ."inventorius/inventorius.php\">Naujas inventorius</a></li>";
+					echo "<li><a href=\"" . $path ."inventorius/inventoriuslist.php\">Inventoriaus sąrašas</a></li> ";					
 					echo "<li><a href=\"" . $path . "inventorius/imone.php\">Nauja įmonė</a></li>";
 					echo "<li><a href=\"" . $path . "inventorius/imonelist.php\">Įmonių sąrašas</a></li>";
+					echo "<li><a href=\"" . $path . "inventorius/reservationimone.php\">Rezervacija renginiui</a></li>";
+					echo "<li><a href=\"" . $path . "inventorius/reservationimonelist.php\">Renginių rezervacijų sąrašas</a></li>";
 				}
 				echo "</ul>";
 				echo "</li>";

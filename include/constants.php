@@ -35,6 +35,7 @@ define ( "TBL_INVENTORY", "inventorius");
 define ( "TBL_RESERVATION", "Rezervacija");
 define ( "TBL_RADINYS", "radiniai");
 define ( "TBL_COMPANY", "imones");
+define ( "TBL_RESERVATIONCOMPANY", "rezervacija_renginiui");
 
 
 /**

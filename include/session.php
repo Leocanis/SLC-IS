@@ -394,6 +394,17 @@ class Session {
     	return true;
     
     }
+    
+    function addReservationImone($itemArray)
+    {
+    	global $database, $form;    	
+    	    
+    
+    	$database->addReservationImone($itemArray);
+    
+    	return true;
+    
+    }
 
     /**
      * editAccount - Attempts to edit the user's account information

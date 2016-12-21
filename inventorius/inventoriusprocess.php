@@ -42,11 +42,39 @@ class Process {
 		{
 			$this->procAddImone();
 		}
+		else if(isset($_POST['subaddreservationimone']))
+		{
+			$this->procAddReservationImone();
+		}
 		/**
 		 * Should not get here, which means user is viewing this page
 		 * by mistake and therefore is redirected.
 		 */ else {
 		 header("Location: index.php");
+		}
+	}
+	
+	function procAddReservationImone()
+	{
+		global $session, $form;
+			
+		$itemArray = array();
+			
+		$itemArray['compid'] = $_POST['compid'];
+		$itemArray['resdate'] = $_POST['resdate'];
+		$itemArray['respagsk'] = $_POST['respagsk'];
+			
+		$retval = $session->addReservationImone($itemArray);
+			
+		if ($retval) {
+			$_SESSION['newcompres'] = true;
+			header("Location: " . $session->referrer);
+		}
+		/* Error found with form */
+		else {
+			$_SESSION['value_array'] = $_POST;
+			$_SESSION['error_array'] = $form->getErrorArray();
+			header("Location: " . $session->referrer);
 		}
 	}
 	

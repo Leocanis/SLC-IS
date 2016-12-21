@@ -148,13 +148,28 @@ class MySQLDB {
     	"'".$itemArray['compemail']. "', ".
     	"'".$itemArray['compbac']."')";
     	 
-    	$_SESSION['query2'] = $q;
+    	return mysqli_query($this->connection, $q);
+    }
+    
+    function addReservationImone($itemArray)
+    {
+    	$q = "INSERT into " . TBL_RESERVATIONCOMPANY . " (imones_id, data, pagalbininkai) values (" .
+    			"'".$itemArray['compid']. "', ".
+    			"'".$itemArray['resdate']. "', ".
+    			"".$itemArray['respagsk'].")";
+    
     	return mysqli_query($this->connection, $q);
     }
     
     function remRadinys($radid)
     {
     	$q = "DELETE FROM " . TBL_RADINYS . " WHERE id = ".$radid;
+    	return mysqli_query($this->connection, $q);
+    }
+    
+    function remReservation($resid)
+    {
+    	$q = "DELETE FROM " . TBL_RESERVATION . " WHERE id = ".$resid;
     	return mysqli_query($this->connection, $q);
     }
     
