@@ -130,7 +130,7 @@ class MySQLDB {
     function addRadinys($itemArray)
     {
     	$q = "INSERT into " . TBL_RADINYS . " (naudotojo_id, kur_rasta, name, komentaras) values " .
-    	"('".$itemArray['userID']."', '".$itemArray['radname']."', '".$itemArray['radplace']."', '".$itemArray['radkom']."')";
+    	"('".$itemArray['userID']."', '".$itemArray['radplace']."', '".$itemArray['radname']."', '".$itemArray['radkom']."')";
     	
     	return mysqli_query($this->connection, $q);
     }
