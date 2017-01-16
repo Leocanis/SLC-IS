@@ -40,7 +40,7 @@ if (isset($session) && $session->logged_in) {
 				if ($session->isManager() || $session->isAdmin()) {
 					echo '<li><a href="'.$path.'renginiai/renginiaiform.php">Naujas renginys</li>';
 				}
-				echo "</ul>";
+			 	echo "</ul>";
 				echo "</li>";
 				if ($session->isAdmin()) {
 					echo "<li><a href=\"" . $path . "admin/admin.php\">Administratoriaus sąsaja</a></li>";

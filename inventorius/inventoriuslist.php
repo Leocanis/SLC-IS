@@ -5,8 +5,16 @@ function displayInventor()
 {
 	global $database;
 	
-	$q = "select * from inventorius order by pavadinimas";
+	if(isset($_SESSION['search']))
+	{
+		$q = "select * from inventorius where pavadinimas like '%". $_SESSION['search'] ."%' order by pavadinimas";
+	}
+	else
+	{
+		$q = "select * from inventorius order by pavadinimas";
+	}
 	$result = $database->query($q);
+	unset($_SESSION['search']);
 	
 	$num_rows = mysqli_num_rows($result);
 	if (!$result || ($num_rows < 0)) {
@@ -18,7 +26,12 @@ function displayInventor()
 		return;
 	}
 	
-	
+	echo "<form action=\"inventoriusprocess.php\" style=\"text-align:left;\" method=\"POST\">";
+	echo "<p>Paieška:</p>";
+	echo "<input name=\"invSearch\" class=\"inv_input\" type=\"text\" size=\"50\" required value=\"\"/>";
+	echo "<input type=\"hidden\" name=\"subsearch\" value=\"1\">";
+    echo "<input type=\"submit\" value=\"Ieškoti\">"; 
+    echo "</from>";
 	
 	echo "<table class=\"table\">";
 	echo "<thead class=\"table-hover\"><tr>

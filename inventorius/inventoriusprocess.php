@@ -46,12 +46,22 @@ class Process {
 		{
 			$this->procAddReservationImone();
 		}
+		else if(isset($_POST['subsearch']))
+		{
+			$this->procSearchInventory();
+		}
 		/**
 		 * Should not get here, which means user is viewing this page
 		 * by mistake and therefore is redirected.
 		 */ else {
 		 header("Location: index.php");
 		}
+	}
+	
+	function procSearchInventory()
+	{
+		$_SESSION['search'] = $_POST['invSearch'];
+		header("Location: " . $path . "inventoriuslist.php");
 	}
 	
 	function procAddReservationImone()
